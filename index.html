@@ -89,7 +89,6 @@
         .heating-btn {
             background-color: var(--secondary-color);
         }
-        /* Dropdown styles with transform to prevent flicker */
         .dropdown-content {
             position: absolute;
             top: calc(100% + 8px);
@@ -225,6 +224,7 @@
         let currentPage = null;
         const speedFrame = document.getElementById('speedFrame');
         const powerFrame = document.getElementById('powerFrame');
+
         function showCalculator(pageId, title, url) {
             if (currentPage === pageId) { hideCalculator(); return; }
             document.getElementById('mainMenu').style.display = 'none';
@@ -238,6 +238,7 @@
             currentPage = pageId;
             closeAllMenus();
         }
+
         function hideCalculator() {
             if (!currentPage) return;
             const frame = currentPage === 'speedPage' ? speedFrame : powerFrame;
@@ -248,16 +249,23 @@
                 currentPage = null;
             }, 300);
         }
+
         function toggleMenu(menuId, button) {
-            closeAllMenus();
             const menu = document.getElementById(menuId);
-            menu.classList.toggle('show');
-            button.classList.toggle('active', menu.classList.contains('show'));
+            const isOpen = menu.classList.contains('show');
+            closeAllMenus();
+            if (isOpen) {
+                return;
+            }
+            menu.classList.add('show');
+            button.classList.add('active');
         }
+
         function closeAllMenus() {
             document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
             document.querySelectorAll('.main-btn').forEach(b => b.classList.remove('active'));
         }
+
         document.addEventListener('click', e => {
             if (!e.target.matches('.main-btn') && !e.target.closest('.main-menu')) closeAllMenus();
         });
