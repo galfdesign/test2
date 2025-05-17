@@ -191,17 +191,19 @@
             content: '←';
         }
         
-        .calculator-frame {
+        iframe {
             width: 100%;
             height: calc(100vh - 120px);
             border: none;
             margin-top: 10px;
             border-radius: 8px;
-            display: none;
+            transition: all 0.3s ease;
         }
         
-        .calculator-frame.active {
-            display: block;
+        .iframe-collapsed {
+            height: 0;
+            overflow: hidden;
+            margin-top: 0;
         }
     </style>
 </head>
@@ -215,7 +217,7 @@
                     Гидравлика
                 </button>
                 <div id="hydraulicMenu" class="dropdown-content">
-                    <a href="#" onclick="showCalculator()">Скорость жидкости</a>
+                    <a href="#" onclick="toggleCalculator()">Скорость жидкости</a>
                     <a href="#">Расход жидкости по мощности</a>
                     <a href="#">Расход жидкости по диаметру</a>
                 </div>
@@ -234,12 +236,53 @@
     </div>
     
     <div id="speedPage" class="content-page">
-        <button class="back-button" onclick="hideCalculator()"></button>
+        <button class="back-button" onclick="toggleCalculator()"></button>
         <h2>Расчёт скорости жидкости</h2>
-        <iframe id="calculatorFrame" class="calculator-frame" src="https://galfdesign.github.io/gidskg/"></iframe>
+        <iframe id="calculatorFrame" src="https://galfdesign.github.io/gidskg/" class="iframe-collapsed"></iframe>
     </div>
 
     <script>
+        let isCalculatorOpen = false;
+        const calculatorFrame = document.getElementById('calculatorFrame');
+        
+        function toggleCalculator() {
+            if (!isCalculatorOpen) {
+                // Показываем страницу с калькулятором
+                document.getElementById('mainMenu').style.display = 'none';
+                document.getElementById('speedPage').style.display = 'block';
+                document.getElementById('speedPage').classList.add('active-page');
+                
+                // Разворачиваем iframe с анимацией
+                setTimeout(() => {
+                    calculatorFrame.classList.remove('iframe-collapsed');
+                }, 10);
+                
+                isCalculatorOpen = true;
+            } else {
+                // Сворачиваем iframe с анимацией
+                calculatorFrame.classList.add('iframe-collapsed');
+                
+                // После завершения анимации скрываем страницу
+                setTimeout(() => {
+                    document.getElementById('speedPage').style.display = 'none';
+                    document.getElementById('mainMenu').style.display = 'block';
+                    isCalculatorOpen = false;
+                }, 300);
+            }
+            
+            // Закрываем все выпадающие меню
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                dropdowns[i].classList.remove("show");
+            }
+            
+            // Убираем активные классы с кнопок
+            var buttons = document.querySelectorAll('.main-btn');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove("active");
+            }
+        }
+        
         function toggleMenu(menuId, button) {
             // Сначала закрываем все открытые меню и убираем активный класс
             var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -265,33 +308,6 @@
             } else {
                 button.classList.remove("active");
             }
-        }
-
-        function showCalculator() {
-            // Показываем страницу с калькулятором
-            document.getElementById('speedPage').classList.add('active-page');
-            document.getElementById('mainMenu').style.display = 'none';
-            
-            // Активируем iframe
-            document.getElementById('calculatorFrame').classList.add('active');
-            
-            // Закрываем все выпадающие меню
-            var dropdowns = document.getElementsByClassName("dropdown-content");
-            for (var i = 0; i < dropdowns.length; i++) {
-                dropdowns[i].classList.remove("show");
-            }
-        }
-
-        function hideCalculator() {
-            // Скрываем страницу с калькулятором
-            document.getElementById('speedPage').classList.remove('active-page');
-            document.getElementById('mainMenu').style.display = 'block';
-            
-            // Деактивируем iframe
-            document.getElementById('calculatorFrame').classList.remove('active');
-            
-            // Останавливаем загрузку iframe (опционально)
-            document.getElementById('calculatorFrame').src = '';
         }
 
         // Закрыть меню при клике вне кнопок
