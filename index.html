@@ -13,13 +13,11 @@
             --menu-bg: #ffffff;
             --shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        
         body {
             font-family: 'Roboto', Arial, sans-serif;
             background-color: var(--bg-color);
@@ -29,39 +27,33 @@
             max-width: 100%;
             position: relative;
         }
-        
         h1 {
             text-align: center;
             margin-bottom: 24px;
             color: var(--primary-color);
             font-size: 1.8rem;
         }
-        
         .menu-container {
             display: flex;
             flex-direction: column;
             gap: 12px;
             margin-bottom: 20px;
         }
-        
         @media (min-width: 768px) {
             .menu-container {
                 flex-direction: row;
                 justify-content: center;
             }
         }
-        
         .main-menu {
             position: relative;
             width: 100%;
         }
-        
         @media (min-width: 768px) {
             .main-menu {
                 width: auto;
             }
         }
-        
         .main-btn {
             background-color: var(--primary-color);
             color: white;
@@ -78,48 +70,49 @@
             align-items: center;
             box-shadow: var(--shadow);
         }
-        
         .main-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(0,0,0,0.15);
         }
-        
         .main-btn:active {
             transform: translateY(0);
         }
-        
         .main-btn::after {
             content: '▼';
             font-size: 0.8rem;
             margin-left: 8px;
             transition: transform 0.3s;
         }
-        
         .main-btn.active::after {
             transform: rotate(180deg);
         }
-        
         .heating-btn {
             background-color: var(--secondary-color);
         }
-        
+        /* Dropdown styles with transform to prevent flicker */
         .dropdown-content {
-            display: none;
-            position: relative;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            display: block;
             background-color: var(--menu-bg);
             width: 100%;
-            margin-top: 8px;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: var(--shadow);
-            animation: fadeIn 0.3s ease;
+            transform-origin: top;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+            visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            will-change: transform;
+            z-index: 100;
         }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .dropdown-content.show {
+            transform: scaleY(1);
+            visibility: visible;
         }
-        
         .dropdown-content a {
             color: var(--text-color);
             padding: 14px 20px;
@@ -128,26 +121,18 @@
             transition: background-color 0.2s;
             border-bottom: 1px solid #eee;
         }
-        
         .dropdown-content a:last-child {
             border-bottom: none;
         }
-        
         .dropdown-content a:hover {
             background-color: #f0f7ff;
             color: var(--primary-color);
         }
-        
         .dropdown-content a::before {
             content: '•';
             margin-right: 8px;
             color: var(--primary-color);
         }
-        
-        .show {
-            display: block;
-        }
-        
         .content-page {
             display: none;
             padding: 20px;
@@ -157,11 +142,9 @@
             margin-top: 20px;
             position: relative;
         }
-        
         .active-page {
             display: block;
         }
-        
         .back-button {
             position: absolute;
             top: 15px;
@@ -181,16 +164,13 @@
             transition: all 0.3s ease;
             z-index: 10;
         }
-        
         .back-button:hover {
             background-color: #3367d6;
             transform: scale(1.1);
         }
-        
         .back-button::before {
             content: '←';
         }
-        
         iframe {
             width: 100%;
             height: calc(100vh - 120px);
@@ -199,13 +179,11 @@
             border-radius: 8px;
             transition: all 0.3s ease;
         }
-        
         .iframe-collapsed {
             height: 0;
             overflow: hidden;
             margin-top: 0;
         }
-        
         .page-title {
             margin-bottom: 15px;
             color: var(--primary-color);
@@ -215,23 +193,17 @@
 <body>
     <div id="mainMenu">
         <h1>Инженерный калькулятор</h1>
-        
         <div class="menu-container">
             <div class="main-menu">
-                <button onclick="toggleMenu('hydraulicMenu', this)" class="main-btn">
-                    Гидравлика
-                </button>
+                <button onclick="toggleMenu('hydraulicMenu', this)" class="main-btn">Гидравлика</button>
                 <div id="hydraulicMenu" class="dropdown-content">
                     <a href="#" onclick="showCalculator('speedPage', 'Скорость жидкости', 'https://galfdesign.github.io/gidskg/')">Скорость жидкости</a>
                     <a href="#" onclick="showCalculator('powerPage', 'Расход жидкости по мощности', 'https://galfdesign.github.io/gidrasxod/')">Расход жидкости по мощности</a>
                     <a href="#">Расход жидкости по диаметру</a>
                 </div>
             </div>
-            
             <div class="main-menu">
-                <button onclick="toggleMenu('heatingMenu', this)" class="main-btn heating-btn">
-                    Отопление
-                </button>
+                <button onclick="toggleMenu('heatingMenu', this)" class="main-btn heating-btn">Отопление</button>
                 <div id="heatingMenu" class="dropdown-content">
                     <a href="#">Температура внутренней поверхности</a>
                     <a href="#">Сопротивление материалов</a>
@@ -239,101 +211,55 @@
             </div>
         </div>
     </div>
-    
     <div id="speedPage" class="content-page">
         <button class="back-button" onclick="hideCalculator()"></button>
         <h2 class="page-title">Расчёт скорости жидкости</h2>
         <iframe id="speedFrame" src="" class="iframe-collapsed"></iframe>
     </div>
-    
     <div id="powerPage" class="content-page">
         <button class="back-button" onclick="hideCalculator()"></button>
         <h2 class="page-title">Расход жидкости по мощности</h2>
         <iframe id="powerFrame" src="" class="iframe-collapsed"></iframe>
     </div>
-
     <script>
         let currentPage = null;
         const speedFrame = document.getElementById('speedFrame');
         const powerFrame = document.getElementById('powerFrame');
-        
         function showCalculator(pageId, title, url) {
-            // Если пытаемся открыть уже открытую страницу - сворачиваем
-            if (currentPage === pageId) {
-                hideCalculator();
-                return;
-            }
-            
-            // Скрываем главное меню
+            if (currentPage === pageId) { hideCalculator(); return; }
             document.getElementById('mainMenu').style.display = 'none';
-            
-            // Устанавливаем заголовок и URL для выбранного калькулятора
             const page = document.getElementById(pageId);
             page.querySelector('.page-title').textContent = title;
             const frame = pageId === 'speedPage' ? speedFrame : powerFrame;
             frame.src = url;
-            
-            // Показываем страницу
             page.style.display = 'block';
             page.classList.add('active-page');
-            
-            // Разворачиваем iframe с анимацией
-            setTimeout(() => {
-                frame.classList.remove('iframe-collapsed');
-            }, 10);
-            
+            setTimeout(() => frame.classList.remove('iframe-collapsed'), 10);
             currentPage = pageId;
-            
-            // Закрываем все выпадающие меню
             closeAllMenus();
         }
-        
         function hideCalculator() {
             if (!currentPage) return;
-            
             const frame = currentPage === 'speedPage' ? speedFrame : powerFrame;
-            
-            // Сворачиваем iframe с анимацией
             frame.classList.add('iframe-collapsed');
-            
-            // После завершения анимации скрываем страницу
             setTimeout(() => {
                 document.getElementById(currentPage).style.display = 'none';
                 document.getElementById('mainMenu').style.display = 'block';
                 currentPage = null;
             }, 300);
         }
-        
         function toggleMenu(menuId, button) {
-            // Сначала закрываем все открытые меню
             closeAllMenus();
-            
-            // Затем открываем/закрываем выбранное меню
-            var menu = document.getElementById(menuId);
-            menu.classList.toggle("show");
-            
-            // Добавляем/убираем активный класс кнопке
-            button.classList.toggle("active", menu.classList.contains("show"));
+            const menu = document.getElementById(menuId);
+            menu.classList.toggle('show');
+            button.classList.toggle('active', menu.classList.contains('show'));
         }
-        
         function closeAllMenus() {
-            var dropdowns = document.getElementsByClassName("dropdown-content");
-            var buttons = document.querySelectorAll('.main-btn');
-            
-            for (var i = 0; i < dropdowns.length; i++) {
-                dropdowns[i].classList.remove("show");
-            }
-            
-            for (var i = 0; i < buttons.length; i++) {
-                buttons[i].classList.remove("active");
-            }
+            document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
+            document.querySelectorAll('.main-btn').forEach(b => b.classList.remove('active'));
         }
-
-        // Закрыть меню при клике вне кнопок
-        document.addEventListener('click', function(event) {
-            if (!event.target.matches('.main-btn') && !event.target.closest('.main-menu')) {
-                closeAllMenus();
-            }
+        document.addEventListener('click', e => {
+            if (!e.target.matches('.main-btn') && !e.target.closest('.main-menu')) closeAllMenus();
         });
     </script>
 </body>
