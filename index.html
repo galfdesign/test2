@@ -234,7 +234,7 @@
                 <div id="hydraulicMenu" class="dropdown-content">
                     <a href="#" onclick="showCalculator('speedPage', 'Скорость жидкости', 'https://galfdesign.github.io/gidskg/')">Скорость жидкости</a>
                     <a href="#" onclick="showCalculator('powerPage', 'Расход жидкости по мощности', 'https://galfdesign.github.io/gidrasxod/')">Расход жидкости по мощности</a>
-                    <a href="#">Расход жидкости по диаметру</a>
+                    <a href="#" onclick="showCalculator('diameterPage', 'Расход жидкости по диаметру', 'https://galfdesign.github.io/giddiametr/')">Расход жидкости по диаметру</a>
                 </div>
             </div>
             
@@ -261,11 +261,18 @@
         <h2 class="page-title">Расход жидкости по мощности</h2>
         <iframe id="powerFrame" src=""></iframe>
     </div>
+    
+    <div id="diameterPage" class="content-page">
+        <button class="back-button" onclick="hideCalculator()"></button>
+        <h2 class="page-title">Расход жидкости по диаметру</h2>
+        <iframe id="diameterFrame" src=""></iframe>
+    </div>
 
     <script>
         let currentPage = null;
         const speedFrame = document.getElementById('speedFrame');
         const powerFrame = document.getElementById('powerFrame');
+        const diameterFrame = document.getElementById('diameterFrame');
         
         function showCalculator(pageId, title, url) {
             // Если пытаемся открыть уже открытую страницу - закрываем
@@ -280,7 +287,7 @@
             // Устанавливаем заголовок и URL для выбранного калькулятора
             const page = document.getElementById(pageId);
             page.querySelector('.page-title').textContent = title;
-            const frame = pageId === 'speedPage' ? speedFrame : powerFrame;
+            const frame = getFrameByPageId(pageId);
             
             // Предзагрузка iframe перед анимацией
             frame.src = url;
@@ -296,6 +303,15 @@
                     document.getElementById('mainMenu').style.display = 'none';
                 }, 50);
             }, 10);
+        }
+        
+        function getFrameByPageId(pageId) {
+            switch(pageId) {
+                case 'speedPage': return speedFrame;
+                case 'powerPage': return powerFrame;
+                case 'diameterPage': return diameterFrame;
+                default: return null;
+            }
         }
         
         function hideCalculator() {
