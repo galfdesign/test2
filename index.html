@@ -205,6 +205,11 @@
             overflow: hidden;
             margin-top: 0;
         }
+        
+        .page-title {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
     </style>
 </head>
 <body>
@@ -217,8 +222,8 @@
                     Гидравлика
                 </button>
                 <div id="hydraulicMenu" class="dropdown-content">
-                    <a href="#" onclick="toggleCalculator()">Скорость жидкости</a>
-                    <a href="#">Расход жидкости по мощности</a>
+                    <a href="#" onclick="showCalculator('speedPage', 'Скорость жидкости', 'https://galfdesign.github.io/gidskg/')">Скорость жидкости</a>
+                    <a href="#" onclick="showCalculator('powerPage', 'Расход жидкости по мощности', 'https://galfdesign.github.io/gidrasxod/')">Расход жидкости по мощности</a>
                     <a href="#">Расход жидкости по диаметру</a>
                 </div>
             </div>
@@ -236,93 +241,98 @@
     </div>
     
     <div id="speedPage" class="content-page">
-        <button class="back-button" onclick="toggleCalculator()"></button>
-        <h2>Расчёт скорости жидкости</h2>
-        <iframe id="calculatorFrame" src="https://galfdesign.github.io/gidskg/" class="iframe-collapsed"></iframe>
+        <button class="back-button" onclick="hideCalculator()"></button>
+        <h2 class="page-title">Расчёт скорости жидкости</h2>
+        <iframe id="speedFrame" src="" class="iframe-collapsed"></iframe>
+    </div>
+    
+    <div id="powerPage" class="content-page">
+        <button class="back-button" onclick="hideCalculator()"></button>
+        <h2 class="page-title">Расход жидкости по мощности</h2>
+        <iframe id="powerFrame" src="" class="iframe-collapsed"></iframe>
     </div>
 
     <script>
-        let isCalculatorOpen = false;
-        const calculatorFrame = document.getElementById('calculatorFrame');
+        let currentPage = null;
+        const speedFrame = document.getElementById('speedFrame');
+        const powerFrame = document.getElementById('powerFrame');
         
-        function toggleCalculator() {
-            if (!isCalculatorOpen) {
-                // Показываем страницу с калькулятором
-                document.getElementById('mainMenu').style.display = 'none';
-                document.getElementById('speedPage').style.display = 'block';
-                document.getElementById('speedPage').classList.add('active-page');
-                
-                // Разворачиваем iframe с анимацией
-                setTimeout(() => {
-                    calculatorFrame.classList.remove('iframe-collapsed');
-                }, 10);
-                
-                isCalculatorOpen = true;
-            } else {
-                // Сворачиваем iframe с анимацией
-                calculatorFrame.classList.add('iframe-collapsed');
-                
-                // После завершения анимации скрываем страницу
-                setTimeout(() => {
-                    document.getElementById('speedPage').style.display = 'none';
-                    document.getElementById('mainMenu').style.display = 'block';
-                    isCalculatorOpen = false;
-                }, 300);
+        function showCalculator(pageId, title, url) {
+            // Если пытаемся открыть уже открытую страницу - сворачиваем
+            if (currentPage === pageId) {
+                hideCalculator();
+                return;
             }
+            
+            // Скрываем главное меню
+            document.getElementById('mainMenu').style.display = 'none';
+            
+            // Устанавливаем заголовок и URL для выбранного калькулятора
+            const page = document.getElementById(pageId);
+            page.querySelector('.page-title').textContent = title;
+            const frame = pageId === 'speedPage' ? speedFrame : powerFrame;
+            frame.src = url;
+            
+            // Показываем страницу
+            page.style.display = 'block';
+            page.classList.add('active-page');
+            
+            // Разворачиваем iframe с анимацией
+            setTimeout(() => {
+                frame.classList.remove('iframe-collapsed');
+            }, 10);
+            
+            currentPage = pageId;
             
             // Закрываем все выпадающие меню
-            var dropdowns = document.getElementsByClassName("dropdown-content");
-            for (var i = 0; i < dropdowns.length; i++) {
-                dropdowns[i].classList.remove("show");
-            }
+            closeAllMenus();
+        }
+        
+        function hideCalculator() {
+            if (!currentPage) return;
             
-            // Убираем активные классы с кнопок
-            var buttons = document.querySelectorAll('.main-btn');
-            for (var i = 0; i < buttons.length; i++) {
-                buttons[i].classList.remove("active");
-            }
+            const frame = currentPage === 'speedPage' ? speedFrame : powerFrame;
+            
+            // Сворачиваем iframe с анимацией
+            frame.classList.add('iframe-collapsed');
+            
+            // После завершения анимации скрываем страницу
+            setTimeout(() => {
+                document.getElementById(currentPage).style.display = 'none';
+                document.getElementById('mainMenu').style.display = 'block';
+                currentPage = null;
+            }, 300);
         }
         
         function toggleMenu(menuId, button) {
-            // Сначала закрываем все открытые меню и убираем активный класс
-            var dropdowns = document.getElementsByClassName("dropdown-content");
-            var buttons = document.querySelectorAll('.main-btn');
-            
-            for (var i = 0; i < dropdowns.length; i++) {
-                if (dropdowns[i].id !== menuId) {
-                    dropdowns[i].classList.remove("show");
-                }
-            }
-            
-            for (var i = 0; i < buttons.length; i++) {
-                buttons[i].classList.remove("active");
-            }
+            // Сначала закрываем все открытые меню
+            closeAllMenus();
             
             // Затем открываем/закрываем выбранное меню
             var menu = document.getElementById(menuId);
             menu.classList.toggle("show");
             
             // Добавляем/убираем активный класс кнопке
-            if (menu.classList.contains("show")) {
-                button.classList.add("active");
-            } else {
-                button.classList.remove("active");
+            button.classList.toggle("active", menu.classList.contains("show"));
+        }
+        
+        function closeAllMenus() {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var buttons = document.querySelectorAll('.main-btn');
+            
+            for (var i = 0; i < dropdowns.length; i++) {
+                dropdowns[i].classList.remove("show");
+            }
+            
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove("active");
             }
         }
 
         // Закрыть меню при клике вне кнопок
         document.addEventListener('click', function(event) {
             if (!event.target.matches('.main-btn') && !event.target.closest('.main-menu')) {
-                var dropdowns = document.getElementsByClassName("dropdown-content");
-                var buttons = document.querySelectorAll('.main-btn');
-                
-                for (var i = 0; i < dropdowns.length; i++) {
-                    dropdowns[i].classList.remove("show");
-                }
-                
-                for (var i = 0; i < buttons.length; i++) {
-                    buttons[i].classList.remove("active");
-                }
+                closeAllMenus();
             }
         });
     </script>
