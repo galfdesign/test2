@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Инженерный калькулятор</title>
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --text-color: #333;
+            --bg-color: #f5f5f5;
+            --menu-bg: #ffffff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+        
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .menu-container {
+                flex-direction: row;
+                justify-content: center;
+            }
+        }
+        
+        .main-menu {
+            position: relative;
+            width: 100%;
+        }
+        
+        @media (min-width: 768px) {
+            .main-menu {
+                width: auto;
+            }
+        }
+        
+        .main-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+        
+        .main-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+        
+        .main-btn:active {
+            transform: translateY(0);
+        }
+        
+        .main-btn::after {
+            content: '▼';
+            font-size: 0.8rem;
+            margin-left: 8px;
+            transition: transform 0.3s;
+        }
+        
+        .main-btn.active::after {
+            transform: rotate(180deg);
+        }
+        
+        .heating-btn {
+            background-color: var(--secondary-color);
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: relative;
+            background-color: var(--menu-bg);
+            width: 100%;
+            margin-top: 8px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .dropdown-content a {
+            color: var(--text-color);
+            padding: 14px 20px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-content a:hover {
+            background-color: #f0f7ff;
+            color: var(--primary-color);
+        }
+        
+        .dropdown-content a::before {
+            content: '•';
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+        
+        .show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Инженерный калькулятор</h1>
+    
+    <div class="menu-container">
+        <div class="main-menu">
+            <button onclick="toggleMenu('hydraulicMenu', this)" class="main-btn">
+                Гидравлика
+            </button>
+            <div id="hydraulicMenu" class="dropdown-content">
+                <a href="#">Скорость жидкости</a>
+                <a href="#">Расход жидкости по мощности</a>
+                <a href="#">Расход жидкости по диаметру</a>
+            </div>
+        </div>
+        
+        <div class="main-menu">
+            <button onclick="toggleMenu('heatingMenu', this)" class="main-btn heating-btn">
+                Отопление
+            </button>
+            <div id="heatingMenu" class="dropdown-content">
+                <a href="#">Температура внутренней поверхности</a>
+                <a href="#">Сопротивление материалов</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu(menuId, button) {
+            // Сначала закрываем все открытые меню и убираем активный класс
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var buttons = document.querySelectorAll('.main-btn');
+            
+            for (var i = 0; i < dropdowns.length; i++) {
+                if (dropdowns[i].id !== menuId) {
+                    dropdowns[i].classList.remove("show");
+                }
+            }
+            
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove("active");
+            }
+            
+            // Затем открываем/закрываем выбранное меню
+            var menu = document.getElementById(menuId);
+            menu.classList.toggle("show");
+            
+            // Добавляем/убираем активный класс кнопке
+            if (menu.classList.contains("show")) {
+                button.classList.add("active");
+            } else {
+                button.classList.remove("active");
+            }
+        }
+
+        // Закрыть меню при клике вне кнопок
+        document.addEventListener('click', function(event) {
+            if (!event.target.matches('.main-btn') && !event.target.closest('.main-menu')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var buttons = document.querySelectorAll('.main-btn');
+                
+                for (var i = 0; i < dropdowns.length; i++) {
+                    dropdowns[i].classList.remove("show");
+                }
+                
+                for (var i = 0; i < buttons.length; i++) {
+                    buttons[i].classList.remove("active");
+                }
+            }
+        });
+    </script>
+</body>
+</html>
