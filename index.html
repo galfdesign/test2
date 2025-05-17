@@ -27,6 +27,7 @@
             line-height: 1.6;
             padding: 20px;
             max-width: 100%;
+            position: relative;
         }
         
         h1 {
@@ -61,7 +62,7 @@
             }
         }
         
-        .main-btn, .back-btn {
+        .main-btn {
             background-color: var(--primary-color);
             color: white;
             padding: 14px 24px;
@@ -76,22 +77,14 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: var(--shadow);
-            text-decoration: none;
-            text-align: center;
         }
         
-        .back-btn {
-            background-color: #666;
-            margin-top: 20px;
-            justify-content: center;
-        }
-        
-        .main-btn:hover, .back-btn:hover {
+        .main-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(0,0,0,0.15);
         }
         
-        .main-btn:active, .back-btn:active {
+        .main-btn:active {
             transform: translateY(0);
         }
         
@@ -162,9 +155,52 @@
             border-radius: 8px;
             box-shadow: var(--shadow);
             margin-top: 20px;
+            position: relative;
         }
         
         .active-page {
+            display: block;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .back-button:hover {
+            background-color: #3367d6;
+            transform: scale(1.1);
+        }
+        
+        .back-button::before {
+            content: '←';
+        }
+        
+        .calculator-frame {
+            width: 100%;
+            height: calc(100vh - 120px);
+            border: none;
+            margin-top: 10px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .calculator-frame.active {
             display: block;
         }
     </style>
@@ -179,7 +215,7 @@
                     Гидравлика
                 </button>
                 <div id="hydraulicMenu" class="dropdown-content">
-                    <a href="#" onclick="showPage('speedPage')">Скорость жидкости</a>
+                    <a href="#" onclick="showCalculator()">Скорость жидкости</a>
                     <a href="#">Расход жидкости по мощности</a>
                     <a href="#">Расход жидкости по диаметру</a>
                 </div>
@@ -198,9 +234,9 @@
     </div>
     
     <div id="speedPage" class="content-page">
+        <button class="back-button" onclick="hideCalculator()"></button>
         <h2>Расчёт скорости жидкости</h2>
-        <iframe src="https://galfdesign.github.io/gidskg/" style="width:100%; height:500px; border:none; margin-top:20px;"></iframe>
-        <button class="back-btn" onclick="showPage('mainMenu')">Вернуться в меню</button>
+        <iframe id="calculatorFrame" class="calculator-frame" src="https://galfdesign.github.io/gidskg/"></iframe>
     </div>
 
     <script>
@@ -231,28 +267,31 @@
             }
         }
 
-        function showPage(pageId) {
-            // Скрываем все страницы
+        function showCalculator() {
+            // Показываем страницу с калькулятором
+            document.getElementById('speedPage').classList.add('active-page');
             document.getElementById('mainMenu').style.display = 'none';
-            document.getElementById('speedPage').classList.remove('active-page');
             
-            // Показываем выбранную страницу
-            document.getElementById(pageId).style.display = 'block';
-            if (pageId !== 'mainMenu') {
-                document.getElementById(pageId).classList.add('active-page');
-            }
+            // Активируем iframe
+            document.getElementById('calculatorFrame').classList.add('active');
             
             // Закрываем все выпадающие меню
             var dropdowns = document.getElementsByClassName("dropdown-content");
             for (var i = 0; i < dropdowns.length; i++) {
                 dropdowns[i].classList.remove("show");
             }
+        }
+
+        function hideCalculator() {
+            // Скрываем страницу с калькулятором
+            document.getElementById('speedPage').classList.remove('active-page');
+            document.getElementById('mainMenu').style.display = 'block';
             
-            // Убираем активные классы с кнопок
-            var buttons = document.querySelectorAll('.main-btn');
-            for (var i = 0; i < buttons.length; i++) {
-                buttons[i].classList.remove("active");
-            }
+            // Деактивируем iframe
+            document.getElementById('calculatorFrame').classList.remove('active');
+            
+            // Останавливаем загрузку iframe (опционально)
+            document.getElementById('calculatorFrame').src = '';
         }
 
         // Закрыть меню при клике вне кнопок
