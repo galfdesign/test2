@@ -235,6 +235,7 @@
                     <a href="#" onclick="showCalculator('speedPage', 'Скорость жидкости', 'https://galfdesign.github.io/gidskg/')">Скорость жидкости</a>
                     <a href="#" onclick="showCalculator('powerPage', 'Расход жидкости по мощности', 'https://galfdesign.github.io/gidrasxod/')">Расход жидкости по мощности</a>
                     <a href="#" onclick="showCalculator('diameterPage', 'Расход жидкости по диаметру', 'https://galfdesign.github.io/giddiametr/')">Расход жидкости по диаметру</a>
+                    <a href="#" onclick="showCalculator('resistancePage', 'Гидравлическое сопротивление', 'https://galfdesign.github.io/gidsoprotjvl/')">Гидравлическое сопротивление</a>
                 </div>
             </div>
             
@@ -267,12 +268,19 @@
         <h2 class="page-title">Расход жидкости по диаметру</h2>
         <iframe id="diameterFrame" src=""></iframe>
     </div>
+    
+    <div id="resistancePage" class="content-page">
+        <button class="back-button" onclick="hideCalculator()"></button>
+        <h2 class="page-title">Гидравлическое сопротивление</h2>
+        <iframe id="resistanceFrame" src=""></iframe>
+    </div>
 
     <script>
         let currentPage = null;
         const speedFrame = document.getElementById('speedFrame');
         const powerFrame = document.getElementById('powerFrame');
         const diameterFrame = document.getElementById('diameterFrame');
+        const resistanceFrame = document.getElementById('resistanceFrame');
         
         function showCalculator(pageId, title, url) {
             // Если пытаемся открыть уже открытую страницу - закрываем
@@ -310,6 +318,7 @@
                 case 'speedPage': return speedFrame;
                 case 'powerPage': return powerFrame;
                 case 'diameterPage': return diameterFrame;
+                case 'resistancePage': return resistanceFrame;
                 default: return null;
             }
         }
