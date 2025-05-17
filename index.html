@@ -61,7 +61,7 @@
             }
         }
         
-        .main-btn {
+        .main-btn, .back-btn {
             background-color: var(--primary-color);
             color: white;
             padding: 14px 24px;
@@ -76,14 +76,22 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: var(--shadow);
+            text-decoration: none;
+            text-align: center;
         }
         
-        .main-btn:hover {
+        .back-btn {
+            background-color: #666;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        
+        .main-btn:hover, .back-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(0,0,0,0.15);
         }
         
-        .main-btn:active {
+        .main-btn:active, .back-btn:active {
             transform: translateY(0);
         }
         
@@ -146,32 +154,53 @@
         .show {
             display: block;
         }
+        
+        .content-page {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-top: 20px;
+        }
+        
+        .active-page {
+            display: block;
+        }
     </style>
 </head>
 <body>
-    <h1>Инженерный калькулятор</h1>
-    
-    <div class="menu-container">
-        <div class="main-menu">
-            <button onclick="toggleMenu('hydraulicMenu', this)" class="main-btn">
-                Гидравлика
-            </button>
-            <div id="hydraulicMenu" class="dropdown-content">
-                <a href="#">Скорость жидкости</a>
-                <a href="#">Расход жидкости по мощности</a>
-                <a href="#">Расход жидкости по диаметру</a>
-            </div>
-        </div>
+    <div id="mainMenu">
+        <h1>Инженерный калькулятор</h1>
         
-        <div class="main-menu">
-            <button onclick="toggleMenu('heatingMenu', this)" class="main-btn heating-btn">
-                Отопление
-            </button>
-            <div id="heatingMenu" class="dropdown-content">
-                <a href="#">Температура внутренней поверхности</a>
-                <a href="#">Сопротивление материалов</a>
+        <div class="menu-container">
+            <div class="main-menu">
+                <button onclick="toggleMenu('hydraulicMenu', this)" class="main-btn">
+                    Гидравлика
+                </button>
+                <div id="hydraulicMenu" class="dropdown-content">
+                    <a href="#" onclick="showPage('speedPage')">Скорость жидкости</a>
+                    <a href="#">Расход жидкости по мощности</a>
+                    <a href="#">Расход жидкости по диаметру</a>
+                </div>
+            </div>
+            
+            <div class="main-menu">
+                <button onclick="toggleMenu('heatingMenu', this)" class="main-btn heating-btn">
+                    Отопление
+                </button>
+                <div id="heatingMenu" class="dropdown-content">
+                    <a href="#">Температура внутренней поверхности</a>
+                    <a href="#">Сопротивление материалов</a>
+                </div>
             </div>
         </div>
+    </div>
+    
+    <div id="speedPage" class="content-page">
+        <h2>Расчёт скорости жидкости</h2>
+        <iframe src="https://galfdesign.github.io/gidskg/" style="width:100%; height:500px; border:none; margin-top:20px;"></iframe>
+        <button class="back-btn" onclick="showPage('mainMenu')">Вернуться в меню</button>
     </div>
 
     <script>
@@ -199,6 +228,30 @@
                 button.classList.add("active");
             } else {
                 button.classList.remove("active");
+            }
+        }
+
+        function showPage(pageId) {
+            // Скрываем все страницы
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('speedPage').classList.remove('active-page');
+            
+            // Показываем выбранную страницу
+            document.getElementById(pageId).style.display = 'block';
+            if (pageId !== 'mainMenu') {
+                document.getElementById(pageId).classList.add('active-page');
+            }
+            
+            // Закрываем все выпадающие меню
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                dropdowns[i].classList.remove("show");
+            }
+            
+            // Убираем активные классы с кнопок
+            var buttons = document.querySelectorAll('.main-btn');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove("active");
             }
         }
 
